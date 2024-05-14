@@ -3,4 +3,4 @@ import { startHTTPServer } from "./cmd/start_http_server";
 
 const args = minimist(process.argv);
 
-startHTTPServer(".env");
+startHTTPServer(".env").then();

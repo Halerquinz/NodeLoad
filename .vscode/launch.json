@@ -5,15 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Standalone Server",
-            "type": "go",
+            "type": "node",
             "request": "launch",
-            "mode": "auto",
-            "program": "cmd/go_newsfeed/",
-            "args": [
-                "standalone-server"
+            "name": "Launch Server",
+            "skipFiles": [
+              "<node_internals>/**"
             ],
-            "cwd": "${workspaceFolder}"
-        }
+            "program": "${workspaceFolder}/src/main.ts",
+            "preLaunchTask": "tsc: build - tsconfig.json",
+            "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+            "outputCapture": "std",
+          },
     ]
 }
