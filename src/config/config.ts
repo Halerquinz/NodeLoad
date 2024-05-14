@@ -5,6 +5,8 @@ import { DownloadConfig } from "./download";
 import { CacheConfig } from "./cache";
 import { TokenConfig } from "./token";
 import { DistributedConfig } from "./distributed";
+import { HTTPServer } from "../handler/http";
+import { HTTPServerConfig } from "./http_server";
 
 export class ServerConfig {
     public logConfig = new LogConfig();
@@ -13,6 +15,7 @@ export class ServerConfig {
     public cacheConfig = new CacheConfig();
     public tokenConfig = new TokenConfig();
     public distributedConfig = new DistributedConfig();
+    public httpServerConfig = new HTTPServerConfig();
 
     public static fromEnv(): ServerConfig {
         const config = new ServerConfig();
@@ -22,6 +25,7 @@ export class ServerConfig {
         config.cacheConfig = CacheConfig.fromEnv();
         config.tokenConfig = TokenConfig.fromEnv();
         config.distributedConfig = DistributedConfig.fromEnv();
+        config.httpServerConfig = HTTPServerConfig.fromEnv();
         return config;
     }
 }
