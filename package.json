@@ -35,9 +35,11 @@
     "knex": "^3.1.0",
     "minimist": "^1.2.8",
     "mysql2": "^3.9.7",
+    "nodejs-snowflake": "^2.0.1",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
+    "validator": "^13.12.0",
     "winston": "^3.13.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
@@ -46,6 +48,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/minimist": "^1.2.5",
     "@types/ms": "^0.7.34",
+    "@types/validator": "^13.11.10",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.57.0"
