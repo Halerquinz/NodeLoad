@@ -35,9 +35,8 @@ export default class UserDataAccessorImpl implements UserDataAccessor {
                     [ColNameUserUsername]: username,
                     [ColNameUserDisplayName]: displayName
                 })
-                .returning(ColNameUserId)
                 .into(TabNameUser);
-            return +rows[0][ColNameUserId];
+            return +rows[0];
         } catch (error) {
             this.logger.error("failed to create user", {
                 username,

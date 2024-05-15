@@ -64,9 +64,8 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
                     [ColNameDownloadTaskMetadata]: task.metadata,
                 }
                 )
-                .returning(ColNameDownloadTaskId)
                 .into(TabNameDownloadTask);
-            return +rows[0][ColNameDownloadTaskId];
+            return +rows[0];
         } catch (error) {
             this.logger.error("failed to create download task", { error });
             throw new ErrorWithHTTPCode("failed to create download task", httpStatus.INTERNAL_SERVER_ERROR);
