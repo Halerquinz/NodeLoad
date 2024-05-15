@@ -85,8 +85,5 @@ web_modules/
 # Build directory
 dist
 
-# Protobuf generated files
-src/proto/gen
-
 # DS_Store file
 .DS_Store

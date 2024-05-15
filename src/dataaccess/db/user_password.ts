@@ -13,7 +13,7 @@ export interface UserPasswordDataAccessor {
     withTransaction<T>(cb: (dataAccessor: UserPasswordDataAccessor) => Promise<T>): Promise<T>;
 }
 
-const TabNameUserPassword = "user_service_password_tab";
+const TabNameUserPassword = "user_password";
 const ColNameUserPasswordOfUserId = "of_user_id";
 const ColNameUserPasswordHash = "hash";
 

@@ -98,7 +98,7 @@ export class JWTGenerator implements TokenGenerator {
                             callback(null, tokenPublicKey);
                         }, (error) => {
                             callback(error);
-                        })
+                        });
                 },
                 verifyOptions,
                 (error, decoded: any) => {
@@ -117,7 +117,6 @@ export class JWTGenerator implements TokenGenerator {
     }
 
     private async getTokenPublicKey(keyId: number): Promise<string> {
-
         const tokenPublicKey = await this.tokenPublicKeyDataAccessor.getTokenPublicKey(keyId);
         if (tokenPublicKey === null) {
             throw new ErrorWithHTTPCode("cannot found token public key", httpStatus.NOT_FOUND);
