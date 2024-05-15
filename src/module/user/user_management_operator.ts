@@ -8,7 +8,7 @@ import { LOGGER_TOKEN } from "../../utils/logging";
 
 export interface UserManagementOperator {
     createUser(username: string, displayName: string): Promise<User>;
-    updateUser(user: User): Promise<User>;
+    updateUser(id: number, username: string, displayName: string): Promise<User>;
     getUser(userId: number): Promise<User>;
 }
 
@@ -47,47 +47,47 @@ export class UserManagementOperatorImpl implements UserManagementOperator {
         })
     }
 
-    public async updateUser(user: User): Promise<User> {
-        if (user.id === undefined) {
+    public async updateUser(id: number, username: string, displayName: string): Promise<User> {
+        if (id === undefined) {
             this.logger.error("userId is requirement");
             throw new ErrorWithHTTPCode("userId is requirement", httpStatus.BAD_REQUEST);
         }
 
-        if (user.username !== undefined) {
-            if (!this.isValidUsername(user.username)) {
+        if (username !== undefined) {
+            if (!this.isValidUsername(username)) {
                 this.logger.error("invalid username");
                 throw new ErrorWithHTTPCode("invalid username", httpStatus.BAD_REQUEST);
             }
         }
 
-        if (user.displayName !== undefined) {
-            if (!this.isValidDisplayName(user.displayName)) {
+        if (displayName !== undefined) {
+            if (!this.isValidDisplayName(displayName)) {
                 this.logger.error("invalid displayName");
                 throw new ErrorWithHTTPCode("invalid displayName", httpStatus.BAD_REQUEST);
             }
         }
 
         return this.userDM.withTransaction<User>(async (userDM) => {
-            const userRecord = await userDM.getUserByUserIdWithXLock(user.id);
+            const userRecord = await userDM.getUserByUserIdWithXLock(id);
             if (userRecord === null) {
                 this.logger.error("can not find user with userId");
                 throw new ErrorWithHTTPCode("can not find user with userId", httpStatus.BAD_REQUEST);
             }
 
-            if (user.username !== undefined) {
-                const userWithUsernameRecord = await userDM.getUserByUsernameWithXLock(user.username);
-                if (userWithUsernameRecord !== null && userWithUsernameRecord.id !== user.id) {
+            if (username !== undefined) {
+                const userWithUsernameRecord = await userDM.getUserByUsernameWithXLock(username);
+                if (userWithUsernameRecord !== null && userWithUsernameRecord.id !== id) {
                     this.logger.error("username already exist");
                     throw new ErrorWithHTTPCode("username already exist", httpStatus.CONFLICT);
                 }
 
-                userRecord.username = user.username;
+                userRecord.username = username;
             }
 
-            await userDM.updateUser(user);
+            await userDM.updateUser({ username, displayName, id });
 
-            if (user.displayName !== undefined) {
-                userRecord.displayName = user.displayName;
+            if (displayName !== undefined) {
+                userRecord.displayName = displayName;
             }
 
             return userRecord;
