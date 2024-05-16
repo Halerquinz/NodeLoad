@@ -18,13 +18,15 @@
     "rollback": "knex migrate:rollback",
     "repair": "knex migrate:repair",
     "serve": "node dist/main.js",
-    "start-initialize": "node dist/main.js --prod --initialize"
+    "start-initialize": "node dist/main.js --prod --initialize",
+    "debug-kafka": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node -- --start_mq_consumer\""
   },
   "keywords": [],
   "author": "halerquinz",
   "license": "ISC",
   "dependencies": {
     "@zapier/secret-scrubber": "^1.1.1",
+    "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "brandi": "^5.0.0",
     "compression": "^1.7.4",
@@ -35,6 +37,7 @@
     "express-async-handler": "^1.2.0",
     "http-status": "^1.7.4",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
     "knex": "^3.1.0",
     "minimist": "^1.2.8",
     "mysql2": "^3.9.7",

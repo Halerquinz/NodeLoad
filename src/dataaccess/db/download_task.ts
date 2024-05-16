@@ -5,12 +5,12 @@ import { injected, token } from "brandi";
 import { KNEX_INSTANCE_TOKEN } from "./knex";
 import httpStatus from "http-status";
 
-export enum DownloadTaskType {
+export enum DownloadType {
     DOWNLOAD_TYPE_UNSPECIFIED = 0,
     DOWNLOAD_TYPE_HTTP = 1,
 }
 
-export enum DownloadTaskStatus {
+export enum DownloadStatus {
     DOWNLOAD_STATUS_UNSPECIFIED = 0,
     DOWNLOAD_STATUS_PENDING = 1,
     DOWNLOAD_STATUS_DOWNLOADING = 2,
@@ -22,15 +22,23 @@ export class DownloadTask {
     constructor(
         public id: number,
         public ofUserId: number,
-        public downloadTaskType: DownloadTaskType,
-        public downloadTaskStatus: DownloadTaskStatus,
+        public downloadType: DownloadType,
+        public downloadStatus: DownloadStatus,
         public url: string,
         public metadata: any,
     ) { }
 }
 
+export interface CreateDownloadTaskParams {
+    ofUserId: number,
+    downloadType: DownloadType,
+    downloadStatus: DownloadStatus,
+    url: string,
+    metadata: any,
+}
+
 export interface DownloadTaskDataAccessor {
-    createDownloadTask(task: DownloadTask): Promise<number>;
+    createDownloadTask(task: CreateDownloadTaskParams): Promise<number>;
     getDownloadTaskListOfUser(userId: number, offset: number, limit: number): Promise<DownloadTask[]>;
     getDownloadTaskCountOfUser(userId: number): Promise<number>;
     getDownloadTask(id: number): Promise<DownloadTask | null>;
@@ -58,8 +66,8 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
             const rows = await this.knex
                 .insert({
                     [ColNameDownloadTaskOfUserId]: task.ofUserId,
-                    [ColNameDownloadTaskDownloadType]: task.downloadTaskType,
-                    [ColNameDownloadTaskDownloadStatus]: task.downloadTaskStatus,
+                    [ColNameDownloadTaskDownloadType]: task.downloadType,
+                    [ColNameDownloadTaskDownloadStatus]: task.downloadStatus,
                     [ColNameDownloadTaskUrl]: task.url,
                     [ColNameDownloadTaskMetadata]: task.metadata,
                 }
@@ -170,7 +178,7 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
                 .select([ColNameDownloadTaskId])
                 .from(TabNameDownloadTask)
                 .where({
-                    [ColNameDownloadTaskDownloadStatus]: DownloadTaskStatus.DOWNLOAD_STATUS_PENDING
+                    [ColNameDownloadTaskDownloadStatus]: DownloadStatus.DOWNLOAD_STATUS_PENDING
                 })
                 .forUpdate();
             return rows.map((row) => row[ColNameDownloadTaskId]);
@@ -185,8 +193,8 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
             await this.knex
                 .table(TabNameDownloadTask)
                 .update({
-                    [ColNameDownloadTaskDownloadStatus]: task.downloadTaskStatus,
-                    [ColNameDownloadTaskDownloadType]: task.downloadTaskType,
+                    [ColNameDownloadTaskDownloadStatus]: task.downloadStatus,
+                    [ColNameDownloadTaskDownloadType]: task.downloadType,
                     [ColNameDownloadTaskUrl]: task.url,
                     [ColNameDownloadTaskMetadata]: task.metadata
                 })
@@ -194,7 +202,7 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
         } catch (error) {
             this.logger.error("failed to update download task", {
                 task
-            })
+            });
             throw new ErrorWithHTTPCode("failed to update download task", httpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -204,10 +212,10 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
             await this.knex
                 .table(TabNameDownloadTask)
                 .update({
-                    [ColNameDownloadTaskDownloadStatus]: DownloadTaskStatus.DOWNLOAD_STATUS_PENDING,
+                    [ColNameDownloadTaskDownloadStatus]: DownloadStatus.DOWNLOAD_STATUS_PENDING,
                 })
-                .where(ColNameDownloadTaskDownloadStatus, DownloadTaskStatus.DOWNLOAD_STATUS_PENDING)
-                .orWhere(ColNameDownloadTaskDownloadStatus, DownloadTaskStatus.DOWNLOAD_STATUS_FAILED);
+                .where(ColNameDownloadTaskDownloadStatus, DownloadStatus.DOWNLOAD_STATUS_PENDING)
+                .orWhere(ColNameDownloadTaskDownloadStatus, DownloadStatus.DOWNLOAD_STATUS_FAILED);
         } catch (error) {
             this.logger.error("failed to update downloading and failed download task status to pending", { error });
             throw new ErrorWithHTTPCode("failed to update downloading and failed download task status to pending", httpStatus.INTERNAL_SERVER_ERROR);
@@ -218,7 +226,7 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
         return this.knex.transaction(async (trx) => {
             const trxDataAccessor = new DownloadTaskDataAccessorImpl(trx, this.logger);
             return cb(trxDataAccessor);
-        })
+        });
     }
 
     private getDownloadTaskFromRow(row: Record<string, any>): DownloadTask {

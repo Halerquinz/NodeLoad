@@ -14,7 +14,7 @@ import { injected, token } from "brandi";
 import httpStatus from "http-status";
 
 export interface TokenManagementOperator {
-    getUserFromToken(token: string): Promise<{ user: User | null; newToken: string | null }>;
+    getUserFromToken(token: string): Promise<{ user: User | null; newToken: string | null; }>;
     blacklistToken(token: string): Promise<void>;
     deleteExpiredBlacklistedToken(requestTime: number): Promise<number>;
 }
@@ -72,7 +72,7 @@ export class TokenManagementOperatorImpl implements TokenManagementOperator {
             }
 
             await dm.createBlacklistedToken(decodeTokenResult.tokenId, decodeTokenResult.expireAt);
-        })
+        });
     }
 
     public async deleteExpiredBlacklistedToken(requestTime: number): Promise<number> {

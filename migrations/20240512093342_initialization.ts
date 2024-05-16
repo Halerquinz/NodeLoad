@@ -4,7 +4,7 @@ const TabNameUser = "user";
 const TabNamePassword = "user_password";
 const TabNameTokenPublicKey = "token_public_key";
 const TabNameBlackListedToken = "blacklisted_token";
-const TabNameDownloadTask = "download_task"
+const TabNameDownloadTask = "download_task";
 
 export async function up(knex: Knex): Promise<void> {
     if (!(await knex.schema.hasTable(TabNameUser))) {
@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
     if (!(await knex.schema.hasTable(TabNameDownloadTask))) {
         await knex.schema.createTable(TabNameDownloadTask, (table) => {
             table.increments("download_task_id", { primaryKey: true });
-            table.integer("of_user_id")
+            table.integer("of_user_id");
 
             table.smallint("download_type").notNullable();
             table.smallint("download_status").notNullable();

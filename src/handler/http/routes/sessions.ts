@@ -12,6 +12,7 @@ import {
     NODE_LOAD_AUTH_COOKIE_NAME,
     getCookieOptions
 } from "../utils";
+import { DOWNLOAD_TASK_MANAGEMENT_OPERATOR_TOKEN, DownloadTaskManagementOperator } from "../../../module/download_task";
 
 export function getSessionsRouter(
     tokenManagementOperator: TokenManagementOperator,

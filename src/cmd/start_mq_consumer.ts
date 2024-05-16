@@ -12,7 +12,7 @@ import * as utils from "../utils";
 import * as http from "../handler/http";
 import * as consumerHandler from "../handler/consumers";
 
-export async function startHTTPServer(dotEnvPath: string): Promise<void> {
+export async function startMQConsumer(dotEnvPath: string): Promise<void> {
     dotenv.config({ path: dotEnvPath });
 
     const container = new Container();
@@ -28,6 +28,6 @@ export async function startHTTPServer(dotEnvPath: string): Promise<void> {
     password.bindToContainer(container);
     consumerHandler.bindToContainer(container);
 
-    const server = container.get(http.HTTP_SERVER_TOKEN);
-    server.loadApiDefinitionAndStart("/");
+    const mqConsumer = container.get(consumerHandler.MQ_CONSUMER_TOKEN);
+    mqConsumer.start();
 }

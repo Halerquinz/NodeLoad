@@ -2,11 +2,11 @@ import { token } from "brandi";
 
 export class DownloadConfig {
     public mode = "s3";
-    public downloadDirectory = "";
+    public downloadDirectory = "../downloads";
     public bucket = "download_files";
     public address = "127.0.0.1:9000";
     public username = "ROOTUSER";
-    public password = "CHANME123"
+    public password = "CHANME123";
 
     public static fromEnv(): DownloadConfig {
         const config = new DownloadConfig();

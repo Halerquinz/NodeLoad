@@ -7,6 +7,7 @@ import { TokenConfig } from "./token";
 import { DistributedConfig } from "./distributed";
 import { HTTPServer } from "../handler/http";
 import { HTTPServerConfig } from "./http_server";
+import { MQConfig } from "./mq";
 
 export class ServerConfig {
     public logConfig = new LogConfig();
@@ -16,6 +17,7 @@ export class ServerConfig {
     public tokenConfig = new TokenConfig();
     public distributedConfig = new DistributedConfig();
     public httpServerConfig = new HTTPServerConfig();
+    public mqConfig = new MQConfig();
 
     public static fromEnv(): ServerConfig {
         const config = new ServerConfig();
@@ -26,6 +28,7 @@ export class ServerConfig {
         config.tokenConfig = TokenConfig.fromEnv();
         config.distributedConfig = DistributedConfig.fromEnv();
         config.httpServerConfig = HTTPServerConfig.fromEnv();
+        config.mqConfig = MQConfig.fromEnv();
         return config;
     }
 }

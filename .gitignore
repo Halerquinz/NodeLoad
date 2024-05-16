@@ -87,3 +87,6 @@ dist
 
 # DS_Store file
 .DS_Store
+
+# Downloaded file location in development
+downloads
