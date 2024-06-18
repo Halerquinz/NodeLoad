@@ -14,7 +14,6 @@ export async function up(knex: Knex): Promise<void> {
             table.string('display_name', 256).notNullable();
 
             table.index(["username"], "user_username_idx");
-            table.index(["display_name"], "user_display_name_idx");
         });
     }
 
@@ -59,6 +58,9 @@ export async function up(knex: Knex): Promise<void> {
             table.text("metadata").notNullable();
 
             table.foreign("of_user_id").references("user_id").inTable(TabNameUser);
+
+            table.index(["of_user_id"], "download_of_user_id_idx");
+            table.index(["download_status"], "download_status_idx");
         });
     }
 }
