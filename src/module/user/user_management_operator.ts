@@ -5,6 +5,7 @@ import { Logger } from "winston";
 import { USER_DATA_ACCESSOR_TOKEN, User, UserDataAccessor } from "../../dataaccess/db";
 import { ErrorWithHTTPCode } from "../../utils";
 import { LOGGER_TOKEN } from "../../utils/logging";
+import { TAKEN_USER_NAME_CACHE_DM_TOKEN, TakenUsernameCacheDM } from "../../dataaccess/cache";
 
 export interface UserManagementOperator {
     createUser(username: string, displayName: string): Promise<User>;
@@ -15,6 +16,7 @@ export interface UserManagementOperator {
 export class UserManagementOperatorImpl implements UserManagementOperator {
     constructor(
         private readonly userDM: UserDataAccessor,
+        private readonly takenUsernameCacheDM: TakenUsernameCacheDM,
         private readonly logger: Logger
     ) { }
 
@@ -29,22 +31,22 @@ export class UserManagementOperatorImpl implements UserManagementOperator {
             throw new ErrorWithHTTPCode("invalid displayname", httpStatus.BAD_REQUEST);
         }
 
-        return this.userDM.withTransaction<User>(async (dm) => {
-            const userRecord = await dm.getUserByUsernameWithXLock(username);
-            if (userRecord !== null) {
-                this.logger.error("username has already been taken", {
-                    username,
-                });
-                throw new ErrorWithHTTPCode("username ${username} has already been taken", httpStatus.CONFLICT);
-            }
+        const isUsernameTaken = await this.isUsernameTaken(username);
+        if (isUsernameTaken) {
+            this.logger.error("username has already been taken", {
+                username,
+            });
+            throw new ErrorWithHTTPCode("username has already been taken", httpStatus.CONFLICT);
+        }
 
+        return this.userDM.withTransaction<User>(async (dm) => {
             const createUserId = await dm.createUser(username, displayName);
             return {
                 id: createUserId,
                 username,
                 displayName
-            }
-        })
+            };
+        });
     }
 
     public async updateUser(id: number, username: string, displayName: string): Promise<User> {
@@ -91,7 +93,7 @@ export class UserManagementOperatorImpl implements UserManagementOperator {
             }
 
             return userRecord;
-        })
+        });
     }
 
     public async getUser(userId: number): Promise<User> {
@@ -102,6 +104,30 @@ export class UserManagementOperatorImpl implements UserManagementOperator {
         }
 
         return user;
+    }
+
+    private async isUsernameTaken(username: string): Promise<boolean> {
+        try {
+            const usernameTakenInCache = await this.takenUsernameCacheDM.has(username);
+            if (usernameTakenInCache) {
+                return true;
+            }
+        } catch (error) {
+            this.logger.warn("failed to get account name from taken set in cache, will fall back to database");
+        }
+
+        const usernameTakenInDB = await this.userDM.getUserByUsernameWithXLock(username);
+        if (usernameTakenInDB === null) {
+            return false;
+        }
+
+        try {
+            await this.takenUsernameCacheDM.add(username);
+        } catch (error) {
+            this.logger.warn("cannot set username taken key to cache", { username });
+        }
+
+        return true;
     }
 
     private sanitizeDisplayName(displayName: string): string {
@@ -117,6 +143,6 @@ export class UserManagementOperatorImpl implements UserManagementOperator {
     }
 }
 
-injected(UserManagementOperatorImpl, USER_DATA_ACCESSOR_TOKEN, LOGGER_TOKEN);
+injected(UserManagementOperatorImpl, USER_DATA_ACCESSOR_TOKEN, TAKEN_USER_NAME_CACHE_DM_TOKEN, LOGGER_TOKEN);
 
 export const USER_MANAGEMENT_OPERATOR_TOKEN = token<UserManagementOperator>("UserManagementOperator");

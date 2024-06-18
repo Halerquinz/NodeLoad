@@ -19,11 +19,11 @@ export class HTTPServer {
     public loadApiDefinitionAndStart(apiSpecPath: string): void {
         const server = this.getGatewayHTTPServer(apiSpecPath);
         server.listen(this.httpServerConfig.port, () => {
-            console.log(`server http is listening on port ${this.httpServerConfig.port} `)
+            console.log(`server http is listening on port ${this.httpServerConfig.port} `);
             this.logger.info("started http server", {
                 port: this.httpServerConfig.port,
             });
-        })
+        });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

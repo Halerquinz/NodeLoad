@@ -25,7 +25,7 @@ export class TokenPublicKeyDataAccessorImpl implements TokenPublicKeyDataAccesso
         try {
             const rows = await this.knex
                 .insert({ [ColNameTokenPublicKeyData]: data })
-                .into(TabNameTokenPublicKey)
+                .into(TabNameTokenPublicKey);
             return +rows[0];
         } catch (error) {
             this.logger.error("failed to create token public key", { error });
@@ -39,7 +39,7 @@ export class TokenPublicKeyDataAccessorImpl implements TokenPublicKeyDataAccesso
             rows = await this.knex
                 .select(ColNameTokenPublicKeyData)
                 .from(TabNameTokenPublicKey)
-                .where({ [ColNameTokenPublicKeyId]: id })
+                .where({ [ColNameTokenPublicKeyId]: id });
         } catch (error) {
             this.logger.error("failed to get token public key by id", { id, error });
             throw new ErrorWithHTTPCode("failed to get token public key by id", httpStatus.INTERNAL_SERVER_ERROR);

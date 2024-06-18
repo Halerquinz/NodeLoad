@@ -6,6 +6,7 @@ import jwt, { SignOptions, VerifyOptions } from "jsonwebtoken";
 import { generateKeyPairSync } from "crypto";
 import { AsyncFactory, injected, token } from "brandi";
 import httpStatus from "http-status";
+import { TOKEN_PUBLIC_KEY_CACHE_DM_TOKEN, TokenPublicKeyCacheDM } from "../../dataaccess/cache";
 
 export class DecodeTokenResult {
     constructor(public tokenId: number, public userId: number, public expireAt: number) { }
@@ -22,6 +23,7 @@ export class JWTGenerator implements TokenGenerator {
 
     constructor(
         private readonly tokenPublicKeyDataAccessor: TokenPublicKeyDataAccessor,
+        private readonly tokenPublicKeyCacheDM: TokenPublicKeyCacheDM,
         private readonly idGenerator: IdGenerator,
         private readonly logger: Logger,
         private readonly tokenConfig: TokenConfig
@@ -29,12 +31,14 @@ export class JWTGenerator implements TokenGenerator {
 
     public static async New(
         tokenPublicKeyDataAccessor: TokenPublicKeyDataAccessor,
+        tokenPublicKeyCacheDM: TokenPublicKeyCacheDM,
         idGenerator: IdGenerator,
         logger: Logger,
         tokenConfig: TokenConfig
     ): Promise<JWTGenerator> {
         const jwtGenerator = new JWTGenerator(
             tokenPublicKeyDataAccessor,
+            tokenPublicKeyCacheDM,
             idGenerator,
             logger,
             tokenConfig
@@ -117,10 +121,24 @@ export class JWTGenerator implements TokenGenerator {
     }
 
     private async getTokenPublicKey(keyId: number): Promise<string> {
+        try {
+            const tokenPublicKey = await this.tokenPublicKeyCacheDM.get(keyId);
+            return tokenPublicKey;
+        } catch (error) {
+            this.logger.warn("cannot get token public key from cache", { keyId, error });
+        }
+
         const tokenPublicKey = await this.tokenPublicKeyDataAccessor.getTokenPublicKey(keyId);
         if (tokenPublicKey === null) {
             throw new ErrorWithHTTPCode("cannot found token public key", httpStatus.NOT_FOUND);
         }
+
+        try {
+            await this.tokenPublicKeyCacheDM.set(keyId, tokenPublicKey.data);
+        } catch (error) {
+            throw error;
+        }
+
         return tokenPublicKey.data;
     }
 }
@@ -128,6 +146,7 @@ export class JWTGenerator implements TokenGenerator {
 injected(
     JWTGenerator.New,
     TOKEN_PUBLIC_KEY_DATA_ACCESSOR_TOKEN,
+    TOKEN_PUBLIC_KEY_CACHE_DM_TOKEN,
     ID_GENERATOR_TOKEN, LOGGER_TOKEN,
     TOKEN_CONFIG_TOKEN
 );

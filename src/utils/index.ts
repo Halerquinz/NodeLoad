@@ -19,5 +19,4 @@ export function bindToContainer(container: Container): void {
     container.bind(ID_GENERATOR_TOKEN).toInstance(SnowflakeIdGenerator).inSingletonScope();
     container.bind(BINARY_CONVERTER_TOKEN).toInstance(BinaryConverterImpl).inSingletonScope();
     container.bind(METADATA_CONVERTER_TOKEN).toInstance(MetadataConverterImpl).inSingletonScope();
-
 }
