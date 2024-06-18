@@ -48,3 +48,5 @@ services:
             - MINIO_ROOT_USER=ROOTUSER
             - MINIO_ROOT_PASSWORD=CHANGEME123
         restart: always
+        volumes:
+            - ../minio-data:/data 
