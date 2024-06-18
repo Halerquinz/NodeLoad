@@ -17,7 +17,7 @@ export class AuthenticatedUserInformation {
 export declare type AuthorizationFunc = (authUserInfo: AuthenticatedUserInformation, request: Request) => boolean;
 
 export interface AuthMiddlewareFactory {
-    getAuthMiddleware(authorizationFunc: AuthorizationFunc, shouldRenewToken: boolean): RequestHandler
+    getAuthMiddleware(authorizationFunc: AuthorizationFunc, shouldRenewToken: boolean): RequestHandler;
 }
 
 export const NODE_LOAD_AUTH_COOKIE_NAME = "NODE_LOAD_AUTH";
@@ -61,7 +61,7 @@ export class AuthMiddlewareFactoryImpl implements AuthMiddlewareFactory {
             }
 
             next();
-        })
+        });
     }
 }
 

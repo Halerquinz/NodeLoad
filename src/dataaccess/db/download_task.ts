@@ -214,8 +214,7 @@ export class DownloadTaskDataAccessorImpl implements DownloadTaskDataAccessor {
                 .update({
                     [ColNameDownloadTaskDownloadStatus]: DownloadStatus.DOWNLOAD_STATUS_PENDING,
                 })
-                .where(ColNameDownloadTaskDownloadStatus, DownloadStatus.DOWNLOAD_STATUS_PENDING)
-                .orWhere(ColNameDownloadTaskDownloadStatus, DownloadStatus.DOWNLOAD_STATUS_FAILED);
+                .where(ColNameDownloadTaskDownloadStatus, DownloadStatus.DOWNLOAD_STATUS_FAILED);
         } catch (error) {
             this.logger.error("failed to update downloading and failed download task status to pending", { error });
             throw new ErrorWithHTTPCode("failed to update downloading and failed download task status to pending", httpStatus.INTERNAL_SERVER_ERROR);

@@ -59,7 +59,7 @@ export default class UserDataAccessorImpl implements UserDataAccessor {
         } catch (error) {
             this.logger.error("failed to update user profile", {
                 user
-            })
+            });
             throw new ErrorWithHTTPCode("failed to update user profile", httpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -76,7 +76,7 @@ export default class UserDataAccessorImpl implements UserDataAccessor {
         } catch (error) {
             this.logger.error("failed to get user by userId", {
                 userId
-            })
+            });
             throw new ErrorWithHTTPCode("failed to get user by userId", httpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -187,7 +187,7 @@ export default class UserDataAccessorImpl implements UserDataAccessor {
         return this.knex.transaction(async (trx) => {
             const trxDataAccessor = new UserDataAccessorImpl(trx, this.logger);
             return cb(trxDataAccessor);
-        })
+        });
     }
 
     private getUserFromRow(row: Record<string, any>): User {

@@ -20,6 +20,19 @@ export function getDownloadTasksRouter(
 
     const userLoggedInAuthMiddleware = authMiddlewareFactory.getAuthMiddleware(() => true, true);
 
+    router.get("/api/download-tasks/:downloadTaskId",
+        userLoggedInAuthMiddleware,
+        asyncHandler(async (req, res, next) => {
+            errorHandlerMiddlewareFactory.catchToErrorHandlerMiddleware(async () => {
+                const downloadTaskId = +req.params.downloadTaskId;
+                const downloadTask = await downloadTaskManagementOperator.getDownloadTaskFile(
+                    downloadTaskId
+                );
+                res.json({ downloadTask });
+            }, next);
+        })
+    );
+
     router.post("/api/download-tasks",
         userLoggedInAuthMiddleware,
         asyncHandler(async (req, res, next) => {

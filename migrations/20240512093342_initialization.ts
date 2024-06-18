@@ -9,7 +9,7 @@ const TabNameDownloadTask = "download_task";
 export async function up(knex: Knex): Promise<void> {
     if (!(await knex.schema.hasTable(TabNameUser))) {
         await knex.schema.createTable(TabNameUser, (table) => {
-            table.increments("user_id", { primaryKey: true });
+            table.increments("user_id", { primaryKey: true }).unsigned();
             table.string('username', 64).notNullable().unique();
             table.string('display_name', 256).notNullable();
 
@@ -20,7 +20,7 @@ export async function up(knex: Knex): Promise<void> {
 
     if (!(await knex.schema.hasTable(TabNamePassword))) {
         await knex.schema.createTable(TabNamePassword, (table) => {
-            table.integer("of_user_id");
+            table.integer("of_user_id").unsigned();
             table.string('hash', 256).notNullable();
 
             table.primary(["of_user_id"]);
@@ -30,7 +30,7 @@ export async function up(knex: Knex): Promise<void> {
 
     if (!(await knex.schema.hasTable(TabNameTokenPublicKey))) {
         await knex.schema.createTable(TabNameTokenPublicKey, (table) => {
-            table.increments("public_key_id", { primaryKey: true });
+            table.increments("public_key_id", { primaryKey: true }).unsigned();
             table.text("data").notNullable();
         });
     }
@@ -50,8 +50,8 @@ export async function up(knex: Knex): Promise<void> {
 
     if (!(await knex.schema.hasTable(TabNameDownloadTask))) {
         await knex.schema.createTable(TabNameDownloadTask, (table) => {
-            table.increments("download_task_id", { primaryKey: true });
-            table.integer("of_user_id");
+            table.increments("download_task_id", { primaryKey: true }).unsigned();
+            table.integer("of_user_id").unsigned();
 
             table.smallint("download_type").notNullable();
             table.smallint("download_status").notNullable();

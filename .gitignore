@@ -90,3 +90,4 @@ dist
 
 # Downloaded file location in development
 downloads
+minio-data

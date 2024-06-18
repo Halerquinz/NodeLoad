@@ -12,4 +12,4 @@ export class HTTPServerConfig {
     }
 }
 
-export const HTTP_SERVER_CONFIG_TOKEN = token<HTTPServerConfig>("HTTPServerConfig")
+export const HTTP_SERVER_CONFIG_TOKEN = token<HTTPServerConfig>("HTTPServerConfig");

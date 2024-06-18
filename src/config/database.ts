@@ -15,8 +15,8 @@ export class DatabaseConfig {
         if (process.env.MYSQL_PORT !== undefined) {
             config.port = +process.env.MYSQL_PORT;
         }
-        if (process.env.MYSQL_USERNAME !== undefined) {
-            config.username = process.env.MYSQL_USERNAME;
+        if (process.env.MYSQL_USER !== undefined) {
+            config.username = process.env.MYSQL_USER;
         }
         if (process.env.MYSQL_PASSWORD !== undefined) {
             config.password = process.env.MYSQL_PASSWORD;

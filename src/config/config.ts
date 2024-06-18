@@ -1,13 +1,14 @@
 import { token } from "brandi";
-import { LogConfig, } from "./log";
-import { DatabaseConfig } from "./database";
-import { DownloadConfig } from "./download";
 import { CacheConfig } from "./cache";
-import { TokenConfig } from "./token";
+import { CronConfig } from "./cron";
+import { DatabaseConfig } from "./database";
 import { DistributedConfig } from "./distributed";
-import { HTTPServer } from "../handler/http";
+import { DownloadConfig } from "./download";
 import { HTTPServerConfig } from "./http_server";
+import { LogConfig, } from "./log";
 import { MQConfig } from "./mq";
+import { TokenConfig } from "./token";
+import { RedisConfig } from "./redis";
 
 export class ServerConfig {
     public logConfig = new LogConfig();
@@ -18,6 +19,8 @@ export class ServerConfig {
     public distributedConfig = new DistributedConfig();
     public httpServerConfig = new HTTPServerConfig();
     public mqConfig = new MQConfig();
+    public cronConfig = new CronConfig();
+    public redisConfig = new RedisConfig();
 
     public static fromEnv(): ServerConfig {
         const config = new ServerConfig();
@@ -29,6 +32,8 @@ export class ServerConfig {
         config.distributedConfig = DistributedConfig.fromEnv();
         config.httpServerConfig = HTTPServerConfig.fromEnv();
         config.mqConfig = MQConfig.fromEnv();
+        config.cronConfig = CronConfig.fromEnv();
+        config.redisConfig = RedisConfig.fromEnv();
         return config;
     }
 }
