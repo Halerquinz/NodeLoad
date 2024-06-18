@@ -8,6 +8,8 @@ import { TOKEN_CONFIG_TOKEN } from "./token";
 import { DISTRIBUTED_CONFIG_TOKEN } from "./distributed";
 import { HTTP_SERVER_CONFIG_TOKEN } from "./http_server";
 import { MQ_CONFIG_TOKEN } from "./mq";
+import { CRON_CONFIG_TOKEN } from "./cron";
+import { REDIS_CONFIG_TOKEN } from "./redis";
 
 export * from "./config";
 export * from "./log";
@@ -18,6 +20,8 @@ export * from "./token";
 export * from "./distributed";
 export * from "./http_server";
 export * from "./mq";
+export * from "./cron";
+export * from "./redis";
 
 export function bindToContainer(container: Container): void {
     container.bind(SERVER_CONFIG_TOKEN).toInstance(ServerConfig.fromEnv).inSingletonScope();
@@ -52,5 +56,13 @@ export function bindToContainer(container: Container): void {
     container
         .bind(MQ_CONFIG_TOKEN)
         .toInstance(() => container.get(SERVER_CONFIG_TOKEN).mqConfig)
+        .inSingletonScope();
+    container
+        .bind(CRON_CONFIG_TOKEN)
+        .toInstance(() => container.get(SERVER_CONFIG_TOKEN).cronConfig)
+        .inSingletonScope();
+    container
+        .bind(REDIS_CONFIG_TOKEN)
+        .toInstance(() => container.get(SERVER_CONFIG_TOKEN).redisConfig)
         .inSingletonScope();
 }
