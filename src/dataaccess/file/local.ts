@@ -4,15 +4,15 @@ import fs from "fs";
 import path from "path";
 import { Logger } from "winston";
 import { DOWNLOAD_CONFIG_TOKEN, DownloadConfig } from "../../config";
-import { LOGGER_TOKEN } from "../../utils";
+import { ErrorWithHTTPCode, LOGGER_TOKEN } from "../../utils";
+import httpStatus from "http-status";
 
-export class LocalClient implements FileClient {
+export class LocalClient {
     private readonly downloadDirectory: string;
 
     constructor(
         private readonly logger: Logger,
         private readonly downloadConfig: DownloadConfig
-
     ) {
         this.downloadDirectory = this.downloadConfig.downloadDirectory;
         if (!fs.existsSync(this.downloadDirectory)) {
@@ -27,7 +27,7 @@ export class LocalClient implements FileClient {
             return fileStream;
         } catch (error) {
             this.logger.error("failed to open file", { error, filePath: absolutePath });
-            throw new Error('failed to open file');
+            throw new ErrorWithHTTPCode("failed to open file", httpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -38,7 +38,7 @@ export class LocalClient implements FileClient {
             return fileStream;
         } catch (error) {
             this.logger.error("failed to open file", { error, filePath: absolutePath });
-            throw new Error("failed to open file");
+            throw new ErrorWithHTTPCode("failed to open file", httpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
